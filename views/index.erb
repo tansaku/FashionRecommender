@@ -1,0 +1,48 @@
+<html>
+  <head>
+    <title>FashionRecommender</title>
+  </head>
+  <body>
+    <h1>FashionRecommender</h1>
+    <label>Please enter your body type:</label>
+    <input type='text' id='body_type' placeholder='e.g. Pear'></input>
+    <br/>
+    <br/>
+    <br/> 
+    <div id='recommendations'>
+    </div>
+
+    <template id='clothing'>
+      <img height='125px' src={{img}}><span>&nbsp;{{name}}</span>
+    </template>
+
+    <script src="lib/jquery-2.1.1.min.js"></script>
+    <script src="lib/mustache.js"></script>
+    <script>
+    $(document).ready(function(){
+      var defaultClothing = Mustache.render($('#clothing').html(),{img:"http://www.cococortesi.com/media/catalog/product/cache/1/image/1000x1500/9df78eab33525d08d6e5fb8d27136e95/_/m/_mg_5212.jpg", name: "Italian Poloneck"});
+      $('#recommendations').append(defaultClothing);
+
+      $('#body_type').keydown(function (e){
+        if(e.keyCode == 13){
+            //$('#body_type').val();
+            $('#recommendations').empty();
+            $.get('/clothes.json',function(clothes){
+              console.log("return: "+ clothes);
+              $.each(clothes,function(index, value){
+                var chunk = Mustache.render($('#clothing').html(),value);  
+                $('#recommendations').append(chunk);               
+              });
+            }).fail(function(xhr, ajaxOptions, thrownError) {
+              console.log("error: "+ xhr.status);
+              console.log("error: "+ thrownError);
+            }).always(function() {
+              console.log( "finished" );
+            });
+        }
+      });
+
+    });
+    </script>
+  </body>
+</html>
